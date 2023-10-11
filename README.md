@@ -7,6 +7,7 @@ https://github.com/stadium-software/datagrid-column-edit-inline/assets/2085324/8
 # Contents
 - [DataGrid Inline Column Editing](#datagrid-inline-column-editing)
 - [Contents](#contents)
+- [Version](#version)
 - [CheckBox Column Editing](#checkbox-column-editing)
   - [CheckBox Column Global Script Setup](#checkbox-column-global-script-setup)
   - [Checkbox Page-Script Setup](#checkbox-page-script-setup)
@@ -28,6 +29,9 @@ https://github.com/stadium-software/datagrid-column-edit-inline/assets/2085324/8
   - [Applying the CSS](#applying-the-css)
   - [Customising CSS](#customising-css)
   - [CSS Upgrading](#css-upgrading)
+
+# Version 
+1.0
 
 # CheckBox Column Editing
 For this module to work, the DataGrid must contain an column showing a boolean value
