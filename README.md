@@ -1,6 +1,420 @@
 # DataGrid Inline Column Editing
 
-This module shows how to enable editing of data contained in a specific DataGrid column. Data updates can immediately be processed in the change event script handler. 
+This module shows how to enable editing of data contained in a specific DataGrid column. Data updates need to be processed immediately in the change event script handler. 
 
 https://github.com/stadium-software/datagrid-column-edit-inline/assets/2085324/822e6933-472b-487d-801a-24a798be62dd
 
+# Contents
+- [DataGrid Inline Column Editing](#datagrid-inline-column-editing)
+- [Contents](#contents)
+- [CheckBox Column Editing](#checkbox-column-editing)
+  - [CheckBox Column Global Script Setup](#checkbox-column-global-script-setup)
+  - [Checkbox Page-Script Setup](#checkbox-page-script-setup)
+  - [Checkbox Page Setup](#checkbox-page-setup)
+  - [Checkbox Page.Load Event Setup](#checkbox-pageload-event-setup)
+- [DropDown Column Editing](#dropdown-column-editing)
+  - [DropDown Column Global Script Setup](#dropdown-column-global-script-setup)
+  - [Type Setup](#type-setup)
+  - [DropDown Page-Script Setup](#dropdown-page-script-setup)
+  - [DropDown Page Setup](#dropdown-page-setup)
+  - [DropDown Page.Load Event Setup](#dropdown-pageload-event-setup)
+- [RadioButtonList Column Editing](#radiobuttonlist-column-editing)
+  - [RadioButtonList Column Global Script Setup](#radiobuttonlist-column-global-script-setup)
+  - [Type Setup](#type-setup-1)
+  - [RadioButtonList Page-Script Setup](#radiobuttonlist-page-script-setup)
+  - [RadioButtonList Page Setup](#radiobuttonlist-page-setup)
+  - [RadioButtonList Page.Load Event Setup](#radiobuttonlist-pageload-event-setup)
+- [Styling](#styling)
+  - [Applying the CSS](#applying-the-css)
+  - [Customising CSS](#customising-css)
+  - [CSS Upgrading](#css-upgrading)
+
+# CheckBox Column Editing
+For this module to work, the DataGrid must contain an column showing a boolean value
+
+## CheckBox Column Global Script Setup
+1. Create a Global Script called "CheckboxColumn"
+2. Add two input parameters to the Global Script
+   1. ColumnHeading
+   2. DataGridClass
+3. Drag a *JavaScript* action into the script
+4. Add the Javascript below into the JavaScript code property (ignore the validation error message "Invalid script was detected")
+```
+let scope = this;
+let className = "." + ~.Parameters.Input.DataGridClass;
+let dg = document.querySelector(className);
+if (!dg) dg = document.querySelector(".data-grid-container");
+dg.classList.add("datagrid-inline-column-editing");
+let dataTbl = dg.querySelector("table");
+let colHeading = ~.Parameters.Input.ColumnHeading;
+let column = getColumnNumber(colHeading);
+let options = {
+        characterData: true,
+        childList: true,
+        subtree: true,
+    },
+    observer = new MutationObserver(setCellContent);
+observer.observe(dataTbl, options);
+
+function setCellContent() {
+    observer.disconnect();
+    let cells = dg.querySelectorAll("tr td:nth-child(" + column + ") div");
+    for (let i = 0; i < cells.length; i++) {
+        let input = cells[i].parentElement.querySelector("input");
+        if (!input) {
+            input = document.createElement("input");
+            input.setAttribute("type", "checkbox");
+            input.addEventListener("change", function (e) {
+                observer.disconnect();
+                if (e.target.checked) {
+                    cells[i].textContent = "Yes";
+                } else { 
+                    cells[i].textContent = "No";
+                }
+                observer.observe(dataTbl, options);
+                let row = e.target.closest("tr");
+                let data = rowToObj(dataTbl, row);
+                scope.ChangeEventHandler(data);
+            });
+            cells[i].parentElement.appendChild(input);
+        }
+        if (cells[i].textContent == "Yes") {
+            input.setAttribute("checked", "");
+        } else { 
+            input.removeAttribute("checked");
+        }
+        cells[i].classList.add("visually-hidden");
+    }
+    observer.observe(dataTbl, options);
+}
+function getColumnNumber(title) {
+    let arrHeadings = dataTbl.querySelectorAll("thead th a");
+    let colNo = 0;
+    for (let i = 0; i < arrHeadings.length; i++) {
+        if (arrHeadings[i].innerText.toLowerCase() == title.toLowerCase()) {
+            colNo = i + 1;
+        }
+    }
+    return colNo;
+}
+function rowToObj(table, row) {
+    let propCells = table.rows[0].cells;
+    let propNames = [];
+    let obj, cells;
+    for (let i = 0; i<propCells.length; i++) {
+        propNames.push(propCells[i].textContent || propCells[i].innerText);
+    }
+    cells = row.cells;
+    obj = {};
+    for (let k = 0; k < propCells.length; k++) {
+        let cell = cells[k].querySelector("div");
+        obj[propNames[k]] = cell.textContent || cell.innerText;
+    }
+    return obj;
+}
+```
+
+## Checkbox Page-Script Setup
+1. Create a Script inside of the Page called "ChangeEventHandler"
+2. Add one input parameter to the Script
+   1. RowData
+3. Drag a *Notification* action into the script
+4. In the *Message* property, select the *RowData* parameter from the *Script Input Parameters* category
+
+## Checkbox Page Setup
+1. Drag a *DataGrid* control to the page ([see above](#database-connector-and-datagrid))
+2. Add a class of your choosing to the *DataGrid* *Classes* property (e.g datagrid-column-edit-inline)
+
+## Checkbox Page.Load Event Setup
+1. Drag the Global Script called "CheckboxColumn" into the Page.Load script
+2. Complete the input properties
+   1. ColumnHeading: The heading of the column you wish to enable editing for
+   2. DataGridClass: The class you assigned to the DataGrid (e.g datagrid-column-edit-inline)
+3. Populate the DataGrid with data ([see above](#database-connector-and-datagrid))
+
+# DropDown Column Editing
+For this module to work, the DataGrid must contain an enum column
+
+## DropDown Column Global Script Setup
+1. Create a Global Script called "DropDownColumn"
+2. Add three input parameters to the Global Script
+   1. ColumnHeading
+   2. DataGridClass
+   3. Values
+3. Drag a *JavaScript* action into the script
+4. Add the Javascript below into the JavaScript code property (ignore the validation error message "Invalid script was detected")
+```
+let scope = this;
+let className = "." + ~.Parameters.Input.DataGridClass;
+let dg = document.querySelector(className);
+if (!dg) dg = document.querySelector(".data-grid-container");
+dg.classList.add("datagrid-inline-column-editing");
+let dataTbl = dg.querySelector("table");
+let colHeading = ~.Parameters.Input.ColumnHeading;
+let column = getColumnNumber(colHeading);
+let vals = ~.Parameters.Input.Values;
+let options = {
+        characterData: true,
+        childList: true,
+        subtree: true,
+    },
+    observer = new MutationObserver(setCellContent);
+observer.observe(dataTbl, options);
+
+function setCellContent() {
+    observer.disconnect();
+    let cells = dg.querySelectorAll("tbody tr td:nth-child(" + column + ")");
+    for (let i = 0; i < cells.length; i++) {
+        let cell = cells[i];
+        let innerCell = cell.querySelector("div");
+        let cellText = innerCell.innerText;
+        let select = cell.querySelector("select");
+        if (!select) {
+            select = document.createElement("select");
+            select.classList.add("form-control");
+            select.classList.add("datagrid-dropdown");
+            for (let j = 0; j < vals.length; j++) { 
+                var option = document.createElement("option");
+                option.text = vals[j].text;
+                option.value = vals[j].value;
+                select.add(option);
+            }
+            select.addEventListener("change", function (e) {
+                observer.disconnect();
+                innerCell.innerText = e.target.value;
+                observer.observe(dataTbl, options);
+                let row = e.target.closest("tr");
+                let data = rowToObj(dataTbl, row);
+                scope.ChangeEventHandler(data);
+            });
+            cell.appendChild(select);
+        }
+        select.value = cellText;
+        innerCell.classList.add("visually-hidden");
+    }
+    observer.observe(dataTbl, options);
+}
+function getColumnNumber(title) {
+    let arrHeadings = dataTbl.querySelectorAll("thead th a");
+    let colNo = 0;
+    for (let i = 0; i < arrHeadings.length; i++) {
+        if (arrHeadings[i].innerText.toLowerCase() == title.toLowerCase()) {
+            colNo = i + 1;
+        }
+    }
+    return colNo;
+}
+function rowToObj(table, row) {
+    let propCells = table.rows[0].cells;
+    let propNames = [];
+    let obj, cells;
+    for (let i = 0; i<propCells.length; i++) {
+        propNames.push(propCells[i].textContent || propCells[i].innerText);
+    }
+    cells = row.cells;
+    obj = {};
+    for (let k = 0; k < propCells.length; k++) {
+        let cell = cells[k].querySelector("div");
+        obj[propNames[k]] = cell.textContent || cell.innerText;
+    }
+    return obj;
+}
+```
+
+## Type Setup
+1. Create a type and call it "Option"
+2. Assign two properties to the type
+   1. text (any)
+   2. value (any)
+
+![](images/OptionType.png)
+
+## DropDown Page-Script Setup
+1. Create a Script inside of the Page called "ChangeEventHandler"
+2. Add one input parameter to the Script
+   1. RowData
+3. Drag a *Notification* action into the script
+4. In the *Message* property, select the *RowData* parameter from the *Script Input Parameters* category
+
+## DropDown Page Setup
+1. Drag a *DataGrid* control to the page ([see above](#database-connector-and-datagrid))
+2. Add a class of your choosing to the *DataGrid* *Classes* property (e.g datagrid-column-edit-inline)
+
+## DropDown Page.Load Event Setup
+1. Drag a *List* action into the script
+2. Select the "Option" type from the dropdown in the *Item Type* property
+3. Populate the list with values (manually or from a datasource)
+4. Drag the Global Script called "DropDownColumn" into the Page.Load script
+5. Complete the input properties
+   1. ColumnHeading: The heading of the column you wish to enable editing for
+   2. DataGridClass: The class you assigned to the DataGrid (e.g datagrid-column-edit-inline)
+   3. Values: Select the *List* of values from the property dropdown
+6. Populate the DataGrid with data ([see above](#database-connector-and-datagrid))
+
+![](images/DropDownScriptInputs.png)
+
+# RadioButtonList Column Editing
+For this module to work, the DataGrid must contain an enum column
+
+## RadioButtonList Column Global Script Setup
+1. Create a Global Script called "RadioButtonListColumn"
+2. Add three input parameters to the Global Script
+   1. ColumnHeading
+   2. DataGridClass
+   3. Values
+3. Drag a *JavaScript* action into the script
+4. Add the Javascript below into the JavaScript code property (ignore the validation error message "Invalid script was detected")
+```
+let scope = this;
+let selectorClass = ~.Parameters.Input.DataGridClass;
+let className = "." + selectorClass;
+let dg = document.querySelector(className);
+if (!dg) dg = document.querySelector(".data-grid-container");
+dg.classList.add("datagrid-inline-column-editing");
+let dataTbl = dg.querySelector("table");
+let colHeading = ~.Parameters.Input.ColumnHeading;
+let column = getColumnNumber(colHeading);
+let vals = ~.Parameters.Input.Values;
+let options = {
+        characterData: true,
+        childList: true,
+        subtree: true,
+    },
+    observer = new MutationObserver(setCellContent);
+observer.observe(dataTbl, options);
+
+function setCellContent() {
+    observer.disconnect();
+    removeRadioButtons();
+    let cells = dg.querySelectorAll("tbody tr td:nth-child(" + column + ")");
+    for (let i = 0; i < cells.length; i++) {
+        let cell = cells[i];
+        let innerCell = cell.querySelector("div");
+        let cellText = innerCell.innerText;
+        let radioContainer = cell.querySelector(".radio-button-list-container");
+        radioContainer = document.createElement("div");
+        radioContainer.classList.add("radio-button-list-container", "inline-radio-button-list-container");
+        for (let j = 0; j < vals.length; j++) {
+            let radioWrapper = document.createElement("div");
+            radioWrapper.classList.add("radio");
+            let radio = document.createElement("input");
+            radio.type = "radio";
+            let name = selectorClass + "_" + "radio_inline_" + i;
+            radio.name = name;
+            let id = name + "_radio_" + j;
+            radio.id = id;
+            radio.value = vals[j].value;
+            if (vals[j].value == cellText) {
+                radio.checked = "true";
+            }
+            radio.addEventListener("change", function (e) {
+                observer.disconnect();
+                innerCell.textContent = e.target.value;
+                observer.observe(dataTbl, options);
+                let row = e.target.closest("tr");
+                let data = rowToObj(dataTbl, row);
+                scope.ChangeEventHandler(data);
+            });
+            let label = document.createElement("label");
+            label.setAttribute("for", id);
+            label.innerText = vals[j].text;
+            radioWrapper.appendChild(radio);
+            radioWrapper.appendChild(label);
+            radioContainer.appendChild(radioWrapper);
+        }
+        cell.appendChild(radioContainer);
+        innerCell.classList.add("visually-hidden");
+    }
+    observer.observe(dataTbl, options);
+}
+function getColumnNumber(title) {
+    let arrHeadings = dataTbl.querySelectorAll("thead th a");
+    let colNo = 0;
+    for (let i = 0; i < arrHeadings.length; i++) {
+        if (arrHeadings[i].innerText.toLowerCase() == title.toLowerCase()) {
+            colNo = i + 1;
+        }
+    }
+    return colNo;
+}
+function rowToObj(table, row) {
+    let propCells = table.rows[0].cells;
+    let propNames = [];
+    let obj, cells;
+    for (let i = 0; i<propCells.length; i++) {
+        propNames.push(propCells[i].textContent || propCells[i].innerText);
+    }
+    cells = row.cells;
+    obj = {};
+    for (let k = 0; k < propCells.length; k++) {
+        let cell = cells[k].querySelector("div");
+        obj[propNames[k]] = cell.textContent || cell.innerText;
+    }
+    return obj;
+}
+function removeRadioButtons() {
+    let radios = dg.querySelectorAll('.inline-radio-button-list-container');
+    for (let j = 0; j < radios.length; j++) {
+        radios[j].remove();
+    }
+}
+```
+
+## Type Setup
+1. Create a type and call it "Option"
+2. Assign two properties to the type
+   1. text (any)
+   2. value (any)
+
+![](images/OptionType.png)
+
+## RadioButtonList Page-Script Setup
+1. Create a Script inside of the Page called "ChangeEventHandler"
+2. Add one input parameter to the Script
+   1. RowData
+3. Drag a *Notification* action into the script
+4. In the *Message* property, select the *RowData* parameter from the *Script Input Parameters* category
+
+## RadioButtonList Page Setup
+1. Drag a *DataGrid* control to the page ([see above](#database-connector-and-datagrid))
+2. Add a class of your choosing to the *DataGrid* *Classes* property (e.g datagrid-column-edit-inline)
+
+## RadioButtonList Page.Load Event Setup
+1. Drag a *List* action into the script
+2. Select the "Option" type from the dropdown in the *Item Type* property
+3. Populate the list with values (manually or from a datasource)
+4. Drag the Global Script called "RadioButtonListColumn" into the Page.Load script
+5. Complete the input properties
+   1. ColumnHeading: The heading of the column you wish to enable editing for
+   2. DataGridClass: The class you assigned to the DataGrid (e.g datagrid-column-edit-inline)
+   3. Values: Select the *List* of values from the property dropdown
+6. Populate the DataGrid with data ([see above](#database-connector-and-datagrid))
+
+![](images/RadioButtonListScriptIInputs.png)
+
+# Styling
+Various elements in this module can be styled using the two CSS files in this repo
+
+## Applying the CSS
+
+**Stadium 6.6 or higher**
+1. Create a folder called "CSS" inside of your Embedded Files in your application
+2. Drag the two CSS files from this repo [*datagrid-column-edit-inline-variables.css*](datagrid-column-edit-inline-variables.css) and [*datagrid-column-edit-inline.css*](datagrid-column-edit-inline.css) into that folder
+3. Paste the link tags below into the *head* property of your application
+```
+<link rel="stylesheet" href="{EmbeddedFiles}/CSS/datagrid-column-edit-inline.css">
+<link rel="stylesheet" href="{EmbeddedFiles}/CSS/datagrid-column-edit-inline-variables.css">
+``` 
+
+![](images/ApplicationHeadProp.png)
+
+**Versions lower than 6.6**
+1. Copy the CSS from the two css files into the Stylesheet in your application
+
+## Customising CSS
+1. Open the CSS file called [*datagrid-column-edit-inline-variables.css*](datagrid-column-edit-inline-variables.css) from this repo
+2. Adjust the variables in the *:root* element as you see fit
+3. Overwrite the file in the CSS folder of your application with the customised file
+
+## CSS Upgrading
+To upgrade the CSS in this module, follow the [steps outlined in this repo](https://github.com/stadium-software/samples-upgrading)
