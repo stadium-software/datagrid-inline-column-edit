@@ -1,0 +1,8 @@
+:root {
+    --datagrid-column-edit-radio-button-label-font-size: 14px;
+    --datagrid-column-edit-radio-button-size: 16px; 
+
+    --datagrid-column-edit-dropdown-font-size: 13px;
+    --datagrid-column-edit-dropdown-padding-topbottom: 0;
+    --datagrid-column-edit-dropdown-padding-left: 6px;
+}

@@ -1,0 +1,32 @@
+.datagrid-inline-column-editing {
+	& .visually-hidden {
+		height: 0;
+		width: 0;
+		overflow: hidden;
+		outline: 0;
+		border: 0;
+		position: absolute;
+		padding: 0;
+	}
+	& .datagrid-dropdown {
+		width: auto;
+		font-size: var(--datagrid-column-edit-dropdown-font-size);
+		padding-top: var(--datagrid-column-edit-dropdown-padding-topbottom);
+		padding-bottom: var(--datagrid-column-edit-dropdown-padding-topbottom);
+		padding-left: var(--datagrid-column-edit-dropdown-padding-left);
+	}
+	& .inline-radio-button-list-container .radio {
+		display: flex;
+		padding: 0 8px;
+	}
+	& .inline-radio-button-list-container input[type=radio] ~ label {
+		background-size: var(--datagrid-column-edit-radio-button-size);
+	}
+	& .inline-radio-button-list-container {
+		padding: 6px 0 0 0;
+		background-color: transparent;
+	}
+	& .inline-radio-button-list-container label {
+		font-size: var(--datagrid-column-edit-radio-button-label-font-size);
+	}
+}
