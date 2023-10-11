@@ -410,7 +410,7 @@ Various elements in this module can be styled using the two CSS files in this re
 <link rel="stylesheet" href="{EmbeddedFiles}/CSS/datagrid-column-edit-inline-variables.css">
 ``` 
 
-![](images/ApplicationHeadProp.png)
+![](images/ApplicationHeader.png)
 
 **Versions lower than 6.6**
 1. Copy the CSS from the two css files into the Stylesheet in your application
