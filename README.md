@@ -43,7 +43,7 @@ For this module to work, the DataGrid must contain an column showing a boolean v
    2. DataGridClass
 3. Drag a *JavaScript* action into the script
 4. Add the Javascript below into the JavaScript code property (ignore the validation error message "Invalid script was detected")
-```
+```javascript
 let scope = this;
 let className = "." + ~.Parameters.Input.DataGridClass;
 let dg = document.querySelector(className);
@@ -147,7 +147,7 @@ For this module to work, the DataGrid must contain an enum column
    3. Values
 3. Drag a *JavaScript* action into the script
 4. Add the Javascript below into the JavaScript code property (ignore the validation error message "Invalid script was detected")
-```
+```javascript
 let scope = this;
 let className = "." + ~.Parameters.Input.DataGridClass;
 let dg = document.querySelector(className);
@@ -268,7 +268,7 @@ For this module to work, the DataGrid must contain an enum column
    3. Values
 3. Drag a *JavaScript* action into the script
 4. Add the Javascript below into the JavaScript code property (ignore the validation error message "Invalid script was detected")
-```
+```javascript
 let scope = this;
 let selectorClass = ~.Parameters.Input.DataGridClass;
 let className = "." + selectorClass;
@@ -405,7 +405,7 @@ Various elements in this module can be styled using the two CSS files in this re
 1. Create a folder called "CSS" inside of your Embedded Files in your application
 2. Drag the two CSS files from this repo [*datagrid-column-edit-inline-variables.css*](datagrid-column-edit-inline-variables.css) and [*datagrid-column-edit-inline.css*](datagrid-column-edit-inline.css) into that folder
 3. Paste the link tags below into the *head* property of your application
-```
+```html
 <link rel="stylesheet" href="{EmbeddedFiles}/CSS/datagrid-column-edit-inline.css">
 <link rel="stylesheet" href="{EmbeddedFiles}/CSS/datagrid-column-edit-inline-variables.css">
 ``` 
