@@ -31,7 +31,7 @@ https://github.com/stadium-software/datagrid-column-edit-inline/assets/2085324/8
   - [CSS Upgrading](#css-upgrading)
 
 # Version 
-1.0
+1.1 Added logic to detect DataGrid class uniqueness
 
 # CheckBox Column Editing
 For this module to work, the DataGrid must contain an column showing a boolean value
@@ -45,11 +45,18 @@ For this module to work, the DataGrid must contain an column showing a boolean v
 4. Add the Javascript below into the JavaScript code property (ignore the validation error message "Invalid script was detected")
 ```javascript
 let scope = this;
-let className = "." + ~.Parameters.Input.DataGridClass;
-let dg = document.querySelector(className);
-if (!dg) dg = document.querySelector(".data-grid-container");
+let dgClassName = "." + ~.Parameters.Input.DataGridClass;
+let dg = document.querySelectorAll(dgClassName);
+if (dg.length == 0) {
+    dg = document.querySelector(".data-grid-container");
+} else if (dg.length > 1) {
+    console.error("The class '" + dgClassName + "' is assigned to multiple DataGrids. DataGrids using this script must have unique classnames");
+    return false;
+} else { 
+    dg = dg[0];
+}
 dg.classList.add("datagrid-inline-column-editing");
-let dataTbl = dg.querySelector("table");
+let table = dg.querySelector("table");
 let colHeading = ~.Parameters.Input.ColumnHeading;
 let column = getColumnNumber(colHeading);
 let options = {
@@ -58,11 +65,11 @@ let options = {
         subtree: true,
     },
     observer = new MutationObserver(setCellContent);
-observer.observe(dataTbl, options);
+observer.observe(table, options);
 
 function setCellContent() {
     observer.disconnect();
-    let cells = dg.querySelectorAll("tr td:nth-child(" + column + ") div");
+    let cells = table.querySelectorAll("tr td:nth-child(" + column + ") div");
     for (let i = 0; i < cells.length; i++) {
         let input = cells[i].parentElement.querySelector("input");
         if (!input) {
@@ -75,9 +82,9 @@ function setCellContent() {
                 } else { 
                     cells[i].textContent = "No";
                 }
-                observer.observe(dataTbl, options);
+                observer.observe(table, options);
                 let row = e.target.closest("tr");
-                let data = rowToObj(dataTbl, row);
+                let data = rowToObj(table, row);
                 scope.ChangeEventHandler(data);
             });
             cells[i].parentElement.appendChild(input);
@@ -89,10 +96,10 @@ function setCellContent() {
         }
         cells[i].classList.add("visually-hidden");
     }
-    observer.observe(dataTbl, options);
+    observer.observe(table, options);
 }
 function getColumnNumber(title) {
-    let arrHeadings = dataTbl.querySelectorAll("thead th a");
+    let arrHeadings = table.querySelectorAll("thead th a");
     let colNo = 0;
     for (let i = 0; i < arrHeadings.length; i++) {
         if (arrHeadings[i].innerText.toLowerCase() == title.toLowerCase()) {
@@ -150,11 +157,18 @@ For this module to work, the DataGrid must contain an enum column
 4. Add the Javascript below into the JavaScript code property (ignore the validation error message "Invalid script was detected")
 ```javascript
 let scope = this;
-let className = "." + ~.Parameters.Input.DataGridClass;
-let dg = document.querySelector(className);
-if (!dg) dg = document.querySelector(".data-grid-container");
+let dgClassName = "." + ~.Parameters.Input.DataGridClass;
+let dg = document.querySelectorAll(dgClassName);
+if (dg.length == 0) {
+    dg = document.querySelector(".data-grid-container");
+} else if (dg.length > 1) {
+    console.error("The class '" + dgClassName + "' is assigned to multiple DataGrids. DataGrids using this script must have unique classnames");
+    return false;
+} else { 
+    dg = dg[0];
+}
 dg.classList.add("datagrid-inline-column-editing");
-let dataTbl = dg.querySelector("table");
+let table = dg.querySelector("table");
 let colHeading = ~.Parameters.Input.ColumnHeading;
 let column = getColumnNumber(colHeading);
 let vals = ~.Parameters.Input.Values;
@@ -164,11 +178,11 @@ let options = {
         subtree: true,
     },
     observer = new MutationObserver(setCellContent);
-observer.observe(dataTbl, options);
+observer.observe(table, options);
 
 function setCellContent() {
     observer.disconnect();
-    let cells = dg.querySelectorAll("tbody tr td:nth-child(" + column + ")");
+    let cells = table.querySelectorAll("tbody tr td:nth-child(" + column + ")");
     for (let i = 0; i < cells.length; i++) {
         let cell = cells[i];
         let innerCell = cell.querySelector("div");
@@ -187,9 +201,9 @@ function setCellContent() {
             select.addEventListener("change", function (e) {
                 observer.disconnect();
                 innerCell.innerText = e.target.value;
-                observer.observe(dataTbl, options);
+                observer.observe(table, options);
                 let row = e.target.closest("tr");
-                let data = rowToObj(dataTbl, row);
+                let data = rowToObj(table, row);
                 scope.ChangeEventHandler(data);
             });
             cell.appendChild(select);
@@ -197,10 +211,10 @@ function setCellContent() {
         select.value = cellText;
         innerCell.classList.add("visually-hidden");
     }
-    observer.observe(dataTbl, options);
+    observer.observe(table, options);
 }
 function getColumnNumber(title) {
-    let arrHeadings = dataTbl.querySelectorAll("thead th a");
+    let arrHeadings = table.querySelectorAll("thead th a");
     let colNo = 0;
     for (let i = 0; i < arrHeadings.length; i++) {
         if (arrHeadings[i].innerText.toLowerCase() == title.toLowerCase()) {
@@ -272,12 +286,18 @@ For this module to work, the DataGrid must contain an enum column
 4. Add the Javascript below into the JavaScript code property (ignore the validation error message "Invalid script was detected")
 ```javascript
 let scope = this;
-let selectorClass = ~.Parameters.Input.DataGridClass;
-let className = "." + selectorClass;
-let dg = document.querySelector(className);
-if (!dg) dg = document.querySelector(".data-grid-container");
+let dgClassName = "." + ~.Parameters.Input.DataGridClass;
+let dg = document.querySelectorAll(dgClassName);
+if (dg.length == 0) {
+    dg = document.querySelector(".data-grid-container");
+} else if (dg.length > 1) {
+    console.error("The class '" + dgClassName + "' is assigned to multiple DataGrids. DataGrids using this script must have unique classnames");
+    return false;
+} else { 
+    dg = dg[0];
+}
 dg.classList.add("datagrid-inline-column-editing");
-let dataTbl = dg.querySelector("table");
+let table = dg.querySelector("table");
 let colHeading = ~.Parameters.Input.ColumnHeading;
 let column = getColumnNumber(colHeading);
 let vals = ~.Parameters.Input.Values;
@@ -287,12 +307,12 @@ let options = {
         subtree: true,
     },
     observer = new MutationObserver(setCellContent);
-observer.observe(dataTbl, options);
+observer.observe(table, options);
 
 function setCellContent() {
     observer.disconnect();
     removeRadioButtons();
-    let cells = dg.querySelectorAll("tbody tr td:nth-child(" + column + ")");
+    let cells = table.querySelectorAll("tbody tr td:nth-child(" + column + ")");
     for (let i = 0; i < cells.length; i++) {
         let cell = cells[i];
         let innerCell = cell.querySelector("div");
@@ -305,7 +325,7 @@ function setCellContent() {
             radioWrapper.classList.add("radio");
             let radio = document.createElement("input");
             radio.type = "radio";
-            let name = selectorClass + "_" + "radio_inline_" + i;
+            let name = dgClassName + "_" + "radio_inline_" + i;
             radio.name = name;
             let id = name + "_radio_" + j;
             radio.id = id;
@@ -316,9 +336,9 @@ function setCellContent() {
             radio.addEventListener("change", function (e) {
                 observer.disconnect();
                 innerCell.textContent = e.target.value;
-                observer.observe(dataTbl, options);
+                observer.observe(table, options);
                 let row = e.target.closest("tr");
-                let data = rowToObj(dataTbl, row);
+                let data = rowToObj(table, row);
                 scope.ChangeEventHandler(data);
             });
             let label = document.createElement("label");
@@ -331,10 +351,10 @@ function setCellContent() {
         cell.appendChild(radioContainer);
         innerCell.classList.add("visually-hidden");
     }
-    observer.observe(dataTbl, options);
+    observer.observe(table, options);
 }
 function getColumnNumber(title) {
-    let arrHeadings = dataTbl.querySelectorAll("thead th a");
+    let arrHeadings = table.querySelectorAll("thead th a");
     let colNo = 0;
     for (let i = 0; i < arrHeadings.length; i++) {
         if (arrHeadings[i].innerText.toLowerCase() == title.toLowerCase()) {
@@ -359,7 +379,7 @@ function rowToObj(table, row) {
     return obj;
 }
 function removeRadioButtons() {
-    let radios = dg.querySelectorAll('.inline-radio-button-list-container');
+    let radios = table.querySelectorAll('.inline-radio-button-list-container');
     for (let j = 0; j < radios.length; j++) {
         radios[j].remove();
     }
