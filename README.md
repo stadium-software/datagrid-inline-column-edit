@@ -127,7 +127,8 @@ function rowToObj(table, row) {
 
 ## Checkbox Page Setup
 1. Drag a *DataGrid* control to the page ([see above](#database-connector-and-datagrid))
-2. Add a class of your choosing to the *DataGrid* *Classes* property (e.g datagrid-column-edit-inline)
+2. Add a class of your choosing to the *DataGrid* *Classes* property to uniquely identify this DataGrid (e.g datagrid-column-edit-inline)
+3. Note: Each DataGrid on a page must have a unique class assigned to it
 
 ## Checkbox Page.Load Event Setup
 1. Drag the Global Script called "CheckboxColumn" into the Page.Load script
@@ -242,7 +243,8 @@ function rowToObj(table, row) {
 
 ## DropDown Page Setup
 1. Drag a *DataGrid* control to the page ([see above](#database-connector-and-datagrid))
-2. Add a class of your choosing to the *DataGrid* *Classes* property (e.g datagrid-column-edit-inline)
+2. Add a class of your choosing to the *DataGrid* *Classes* property to uniquely identify this DataGrid (e.g datagrid-column-edit-inline)
+3. Note: Each DataGrid on a page must have a unique class assigned to it
 
 ## DropDown Page.Load Event Setup
 1. Drag a *List* action into the script
@@ -381,7 +383,8 @@ function removeRadioButtons() {
 
 ## RadioButtonList Page Setup
 1. Drag a *DataGrid* control to the page ([see above](#database-connector-and-datagrid))
-2. Add a class of your choosing to the *DataGrid* *Classes* property (e.g datagrid-column-edit-inline)
+2. Add a class of your choosing to the *DataGrid* *Classes* property to uniquely identify this DataGrid (e.g datagrid-column-edit-inline)
+3. Note: Each DataGrid on a page must have a unique class assigned to it
 
 ## RadioButtonList Page.Load Event Setup
 1. Drag a *List* action into the script
