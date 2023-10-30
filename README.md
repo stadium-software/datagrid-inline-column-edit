@@ -4,8 +4,13 @@ This module shows how to enable editing of data contained in a specific DataGrid
 
 https://github.com/stadium-software/datagrid-column-edit-inline/assets/2085324/822e6933-472b-487d-801a-24a798be62dd
 
+## Sample applications
+This repo contains one Stadium 6.7 application
+[DataGridInlineColumnEditing.sapz](Stadium6/DataGridInlineColumnEditing.sapz?raw=true)
+
 # Contents
 - [DataGrid Inline Column Editing](#datagrid-inline-column-editing)
+  - [Sample applications](#sample-applications)
 - [Contents](#contents)
 - [Version](#version)
 - [CheckBox Column Editing](#checkbox-column-editing)
