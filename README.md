@@ -49,6 +49,7 @@ For this module to work, the DataGrid must contain an column showing a boolean v
 3. Drag a *JavaScript* action into the script
 4. Add the Javascript below into the JavaScript code property (ignore the validation error message "Invalid script was detected")
 ```javascript
+/*Stadium Script Version 1.1*/
 let scope = this;
 let dgClassName = "." + ~.Parameters.Input.DataGridClass;
 let dg = document.querySelectorAll(dgClassName);
@@ -161,6 +162,7 @@ For this module to work, the DataGrid must contain an enum column
 3. Drag a *JavaScript* action into the script
 4. Add the Javascript below into the JavaScript code property (ignore the validation error message "Invalid script was detected")
 ```javascript
+/*Stadium Script Version 1.1*/
 let scope = this;
 let dgClassName = "." + ~.Parameters.Input.DataGridClass;
 let dg = document.querySelectorAll(dgClassName);
@@ -290,6 +292,7 @@ For this module to work, the DataGrid must contain an enum column
 3. Drag a *JavaScript* action into the script
 4. Add the Javascript below into the JavaScript code property (ignore the validation error message "Invalid script was detected")
 ```javascript
+/*Stadium Script Version 1.1*/
 let scope = this;
 let dgClassName = "." + ~.Parameters.Input.DataGridClass;
 let dg = document.querySelectorAll(dgClassName);
