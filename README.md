@@ -37,6 +37,7 @@ This repo contains one Stadium 6.7 application
 
 # Version 
 1.1 Added logic to detect DataGrid class uniqueness
+1.2 Amended scripts to work with changed DG HTML rendering
 
 # CheckBox Column Editing
 For this module to work, the DataGrid must contain an column showing a boolean value
@@ -49,7 +50,7 @@ For this module to work, the DataGrid must contain an column showing a boolean v
 3. Drag a *JavaScript* action into the script
 4. Add the Javascript below into the JavaScript code property (ignore the validation error message "Invalid script was detected")
 ```javascript
-/*Stadium Script Version 1.1*/
+/* Stadium Script Version 1.2 */
 let scope = this;
 let dgClassName = "." + ~.Parameters.Input.DataGridClass;
 let dg = document.querySelectorAll(dgClassName);
@@ -75,32 +76,40 @@ observer.observe(table, options);
 
 function setCellContent() {
     observer.disconnect();
-    let cells = table.querySelectorAll("tr td:nth-child(" + column + ") div");
+    let cells = table.querySelectorAll("tr td:nth-child(" + column + ")");
     for (let i = 0; i < cells.length; i++) {
-        let input = cells[i].parentElement.querySelector("input");
+        let input = cells[i].querySelector("input");
+        let celldiv = cells[i].querySelector("div");
+        if (!celldiv) {
+            celldiv = document.createElement("div");
+            let cellContent = cells[i].innerHTML;
+            cells[i].innerHTML = "";
+            celldiv.innerHTML = cellContent;
+            cells[i].appendChild(celldiv);
+        }
+        celldiv.classList.add("visually-hidden");
         if (!input) {
             input = document.createElement("input");
             input.setAttribute("type", "checkbox");
+            cells[i].appendChild(input);
             input.addEventListener("change", function (e) {
                 observer.disconnect();
                 if (e.target.checked) {
-                    cells[i].textContent = "Yes";
+                    celldiv.textContent = "Yes";
                 } else { 
-                    cells[i].textContent = "No";
+                    celldiv.textContent = "No";
                 }
                 observer.observe(table, options);
                 let row = e.target.closest("tr");
                 let data = rowToObj(table, row);
                 scope.ChangeEventHandler(data);
             });
-            cells[i].parentElement.appendChild(input);
         }
         if (cells[i].textContent == "Yes") {
             input.setAttribute("checked", "");
         } else { 
             input.removeAttribute("checked");
         }
-        cells[i].classList.add("visually-hidden");
     }
     observer.observe(table, options);
 }
@@ -124,8 +133,8 @@ function rowToObj(table, row) {
     cells = row.cells;
     obj = {};
     for (let k = 0; k < propCells.length; k++) {
-        let cell = cells[k].querySelector("div");
-        obj[propNames[k]] = cell.textContent || cell.innerText;
+        let cellText = cells[k].textContent || cells[k].innerText;
+        obj[propNames[k]] = cellText;
     }
     return obj;
 }
@@ -162,7 +171,7 @@ For this module to work, the DataGrid must contain an enum column
 3. Drag a *JavaScript* action into the script
 4. Add the Javascript below into the JavaScript code property (ignore the validation error message "Invalid script was detected")
 ```javascript
-/*Stadium Script Version 1.1*/
+/* Stadium Script Version 1.2 */
 let scope = this;
 let dgClassName = "." + ~.Parameters.Input.DataGridClass;
 let dg = document.querySelectorAll(dgClassName);
@@ -192,13 +201,21 @@ function setCellContent() {
     let cells = table.querySelectorAll("tbody tr td:nth-child(" + column + ")");
     for (let i = 0; i < cells.length; i++) {
         let cell = cells[i];
-        let innerCell = cell.querySelector("div");
-        let cellText = innerCell.innerText;
+        let celldiv = cells[i].querySelector("div");
+        if (!celldiv) {
+            celldiv = document.createElement("div");
+            let cellContent = cells[i].innerHTML;
+            cells[i].innerHTML = "";
+            celldiv.innerHTML = cellContent;
+            cells[i].appendChild(celldiv);
+        }
+        let cellText = celldiv.innerText;
         let select = cell.querySelector("select");
         if (!select) {
             select = document.createElement("select");
             select.classList.add("form-control");
             select.classList.add("datagrid-dropdown");
+            cell.appendChild(select);
             for (let j = 0; j < vals.length; j++) { 
                 var option = document.createElement("option");
                 option.text = vals[j].text;
@@ -207,16 +224,15 @@ function setCellContent() {
             }
             select.addEventListener("change", function (e) {
                 observer.disconnect();
-                innerCell.innerText = e.target.value;
+                celldiv.innerText = e.target.value;
                 observer.observe(table, options);
                 let row = e.target.closest("tr");
                 let data = rowToObj(table, row);
                 scope.ChangeEventHandler(data);
             });
-            cell.appendChild(select);
         }
         select.value = cellText;
-        innerCell.classList.add("visually-hidden");
+        celldiv.classList.add("visually-hidden");
     }
     observer.observe(table, options);
 }
@@ -240,8 +256,9 @@ function rowToObj(table, row) {
     cells = row.cells;
     obj = {};
     for (let k = 0; k < propCells.length; k++) {
-        let cell = cells[k].querySelector("div");
-        obj[propNames[k]] = cell.textContent || cell.innerText;
+        let cellText = cells[k].textContent || cells[k].innerText;
+        if (cells[k].querySelector("select")) cellText = cells[k].querySelector("div").innerText;
+        obj[propNames[k]] = cellText;
     }
     return obj;
 }
@@ -292,7 +309,7 @@ For this module to work, the DataGrid must contain an enum column
 3. Drag a *JavaScript* action into the script
 4. Add the Javascript below into the JavaScript code property (ignore the validation error message "Invalid script was detected")
 ```javascript
-/*Stadium Script Version 1.1*/
+/* Stadium Script Version 1.2 */
 let scope = this;
 let dgClassName = "." + ~.Parameters.Input.DataGridClass;
 let dg = document.querySelectorAll(dgClassName);
@@ -323,8 +340,15 @@ function setCellContent() {
     let cells = table.querySelectorAll("tbody tr td:nth-child(" + column + ")");
     for (let i = 0; i < cells.length; i++) {
         let cell = cells[i];
-        let innerCell = cell.querySelector("div");
-        let cellText = innerCell.innerText;
+        let celldiv = cells[i].querySelector("div");
+        if (!celldiv) {
+            celldiv = document.createElement("div");
+            let cellContent = cells[i].innerHTML;
+            cells[i].innerHTML = "";
+            celldiv.innerHTML = cellContent;
+            cells[i].appendChild(celldiv);
+        }
+        let cellText = celldiv.innerText;
         let radioContainer = cell.querySelector(".radio-button-list-container");
         radioContainer = document.createElement("div");
         radioContainer.classList.add("radio-button-list-container", "inline-radio-button-list-container");
@@ -343,7 +367,7 @@ function setCellContent() {
             }
             radio.addEventListener("change", function (e) {
                 observer.disconnect();
-                innerCell.textContent = e.target.value;
+                celldiv.textContent = e.target.value;
                 observer.observe(table, options);
                 let row = e.target.closest("tr");
                 let data = rowToObj(table, row);
@@ -357,7 +381,7 @@ function setCellContent() {
             radioContainer.appendChild(radioWrapper);
         }
         cell.appendChild(radioContainer);
-        innerCell.classList.add("visually-hidden");
+        celldiv.classList.add("visually-hidden");
     }
     observer.observe(table, options);
 }
@@ -381,8 +405,9 @@ function rowToObj(table, row) {
     cells = row.cells;
     obj = {};
     for (let k = 0; k < propCells.length; k++) {
-        let cell = cells[k].querySelector("div");
-        obj[propNames[k]] = cell.textContent || cell.innerText;
+        let cellText = cells[k].textContent || cells[k].innerText;
+        if (cells[k].querySelector(".radio")) cellText = cells[k].querySelector("div").innerText;
+        obj[propNames[k]] = cellText;
     }
     return obj;
 }
