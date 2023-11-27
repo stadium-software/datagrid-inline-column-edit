@@ -38,20 +38,23 @@ This repo contains one Stadium 6.7 application
 # Version 
 1.1 Added logic to detect DataGrid class uniqueness
 1.2 Amended scripts to work with changed DG HTML rendering
+1.3 Added custom event handler feature
 
 # CheckBox Column Editing
 For this module to work, the DataGrid must contain an column showing a boolean value
 
 ## CheckBox Column Global Script Setup
 1. Create a Global Script called "CheckboxColumn"
-2. Add two input parameters to the Global Script
+2. Add the input parameters below to the Global Script
    1. ColumnHeading
    2. DataGridClass
+   3. CallbackScript
 3. Drag a *JavaScript* action into the script
 4. Add the Javascript below into the JavaScript code property (ignore the validation error message "Invalid script was detected")
 ```javascript
-/* Stadium Script Version 1.2 */
+/* Stadium Script Version 1.3 */
 let scope = this;
+let callback = ~.Parameters.Input.CallbackScript;
 let dgClassName = "." + ~.Parameters.Input.DataGridClass;
 let dg = document.querySelectorAll(dgClassName);
 if (dg.length == 0) {
@@ -92,7 +95,7 @@ function setCellContent() {
             input = document.createElement("input");
             input.setAttribute("type", "checkbox");
             cells[i].appendChild(input);
-            input.addEventListener("change", function (e) {
+            input.addEventListener("change", async e => {
                 observer.disconnect();
                 if (e.target.checked) {
                     celldiv.textContent = "Yes";
@@ -102,7 +105,7 @@ function setCellContent() {
                 observer.observe(table, options);
                 let row = e.target.closest("tr");
                 let data = rowToObj(table, row);
-                scope.ChangeEventHandler(data);
+                await scope[callback](data);
             });
         }
         if (cells[i].textContent == "Yes") {
@@ -141,7 +144,7 @@ function rowToObj(table, row) {
 ```
 
 ## Checkbox Page-Script Setup
-1. Create a Script inside of the Page called "ChangeEventHandler"
+1. Create a Script inside of the Page with any name you like (e.g. "ChangeEventHandler")
 2. Add one input parameter to the Script
    1. RowData
 3. Drag a *Notification* action into the script
@@ -157,6 +160,7 @@ function rowToObj(table, row) {
 2. Complete the input properties
    1. ColumnHeading: The heading of the column you wish to enable editing for
    2. DataGridClass: The class you assigned to the DataGrid (e.g datagrid-column-edit-inline)
+   3. CallbackScript: The name of the page-level script that will process the updated data (e.g. "ChangeEventHandler")
 3. Populate the DataGrid with data ([see above](#database-connector-and-datagrid))
 
 # DropDown Column Editing
@@ -164,15 +168,17 @@ For this module to work, the DataGrid must contain an enum column
 
 ## DropDown Column Global Script Setup
 1. Create a Global Script called "DropDownColumn"
-2. Add three input parameters to the Global Script
+2. Add the input parameters below to the Global Script
    1. ColumnHeading
    2. DataGridClass
    3. Values
+   4. CallbackScript
 3. Drag a *JavaScript* action into the script
 4. Add the Javascript below into the JavaScript code property (ignore the validation error message "Invalid script was detected")
 ```javascript
-/* Stadium Script Version 1.2 */
+/* Stadium Script Version 1.3 */
 let scope = this;
+let callback = ~.Parameters.Input.CallbackScript;
 let dgClassName = "." + ~.Parameters.Input.DataGridClass;
 let dg = document.querySelectorAll(dgClassName);
 if (dg.length == 0) {
@@ -222,13 +228,13 @@ function setCellContent() {
                 option.value = vals[j].value;
                 select.add(option);
             }
-            select.addEventListener("change", function (e) {
+            select.addEventListener("change", async e => {
                 observer.disconnect();
                 celldiv.innerText = e.target.value;
                 observer.observe(table, options);
                 let row = e.target.closest("tr");
                 let data = rowToObj(table, row);
-                scope.ChangeEventHandler(data);
+                await scope[callback](data);
             });
         }
         select.value = cellText;
@@ -273,7 +279,7 @@ function rowToObj(table, row) {
 ![](images/OptionType.png)
 
 ## DropDown Page-Script Setup
-1. Create a Script inside of the Page called "ChangeEventHandler"
+1. Create a Script inside of the Page with any name you like (e.g. "ChangeEventHandler")
 2. Add one input parameter to the Script
    1. RowData
 3. Drag a *Notification* action into the script
@@ -293,6 +299,7 @@ function rowToObj(table, row) {
    1. ColumnHeading: The heading of the column you wish to enable editing for
    2. DataGridClass: The class you assigned to the DataGrid (e.g datagrid-column-edit-inline)
    3. Values: Select the *List* of values from the property dropdown
+   4. CallbackScript: The name of the page-level script that will process the updated data (e.g. "ChangeEventHandler")
 6. Populate the DataGrid with data ([see above](#database-connector-and-datagrid))
 
 ![](images/DropDownScriptInputs.png)
@@ -302,15 +309,17 @@ For this module to work, the DataGrid must contain an enum column
 
 ## RadioButtonList Column Global Script Setup
 1. Create a Global Script called "RadioButtonListColumn"
-2. Add three input parameters to the Global Script
+2. Add the input parameters below to the Global Script
    1. ColumnHeading
    2. DataGridClass
    3. Values
+   4. CallbackScript
 3. Drag a *JavaScript* action into the script
 4. Add the Javascript below into the JavaScript code property (ignore the validation error message "Invalid script was detected")
 ```javascript
-/* Stadium Script Version 1.2 */
+/* Stadium Script Version 1.3 */
 let scope = this;
+let callback = ~.Parameters.Input.CallbackScript;
 let dgClassName = "." + ~.Parameters.Input.DataGridClass;
 let dg = document.querySelectorAll(dgClassName);
 if (dg.length == 0) {
@@ -365,13 +374,13 @@ function setCellContent() {
             if (vals[j].value == cellText) {
                 radio.checked = "true";
             }
-            radio.addEventListener("change", function (e) {
+            radio.addEventListener("change", async e => {
                 observer.disconnect();
                 celldiv.textContent = e.target.value;
                 observer.observe(table, options);
                 let row = e.target.closest("tr");
                 let data = rowToObj(table, row);
-                scope.ChangeEventHandler(data);
+                await scope[callback](data);
             });
             let label = document.createElement("label");
             label.setAttribute("for", id);
@@ -428,7 +437,7 @@ function removeRadioButtons() {
 ![](images/OptionType.png)
 
 ## RadioButtonList Page-Script Setup
-1. Create a Script inside of the Page called "ChangeEventHandler"
+1. Create a Script inside of the Page with any name you like (e.g. "ChangeEventHandler")
 2. Add one input parameter to the Script
    1. RowData
 3. Drag a *Notification* action into the script
@@ -448,6 +457,7 @@ function removeRadioButtons() {
    1. ColumnHeading: The heading of the column you wish to enable editing for
    2. DataGridClass: The class you assigned to the DataGrid (e.g datagrid-column-edit-inline)
    3. Values: Select the *List* of values from the property dropdown
+   4. CallbackScript: The name of the page-level script that will process the updated data (e.g. "ChangeEventHandler")
 6. Populate the DataGrid with data ([see above](#database-connector-and-datagrid))
 
 ![](images/RadioButtonListScriptIInputs.png)
