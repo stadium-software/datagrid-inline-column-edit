@@ -163,6 +163,8 @@ function rowToObj(table, row) {
    3. CallbackScript: The name of the page-level script that will process the updated data (e.g. "ChangeEventHandler")
 3. Populate the DataGrid with data ([see above](#database-connector-and-datagrid))
 
+![](images/CheckboxScriptInputs.png)
+
 # DropDown Column Editing
 For this module to work, the DataGrid must contain an enum column
 
