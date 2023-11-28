@@ -39,6 +39,7 @@ This repo contains one Stadium 6.7 application
 1.1 Added logic to detect DataGrid class uniqueness
 1.2 Amended scripts to work with changed DG HTML rendering
 1.3 Added custom event handler feature
+1.4 Fixed selectable column bug
 
 # CheckBox Column Editing
 For this module to work, the DataGrid must contain an column showing a boolean value
@@ -52,7 +53,7 @@ For this module to work, the DataGrid must contain an column showing a boolean v
 3. Drag a *JavaScript* action into the script
 4. Add the Javascript below into the JavaScript code property (ignore the validation error message "Invalid script was detected")
 ```javascript
-/* Stadium Script Version 1.3 */
+/* Stadium Script Version 1.4 */
 let scope = this;
 let callback = ~.Parameters.Input.CallbackScript;
 let dgClassName = "." + ~.Parameters.Input.DataGridClass;
@@ -75,6 +76,7 @@ let options = {
         subtree: true,
     },
     observer = new MutationObserver(setCellContent);
+setCellContent();
 observer.observe(table, options);
 
 function setCellContent() {
@@ -117,7 +119,7 @@ function setCellContent() {
     observer.observe(table, options);
 }
 function getColumnNumber(title) {
-    let arrHeadings = table.querySelectorAll("thead th a");
+    let arrHeadings = table.querySelectorAll("thead th");
     let colNo = 0;
     for (let i = 0; i < arrHeadings.length; i++) {
         if (arrHeadings[i].innerText.toLowerCase() == title.toLowerCase()) {
@@ -178,7 +180,7 @@ For this module to work, the DataGrid must contain an enum column
 3. Drag a *JavaScript* action into the script
 4. Add the Javascript below into the JavaScript code property (ignore the validation error message "Invalid script was detected")
 ```javascript
-/* Stadium Script Version 1.3 */
+/* Stadium Script Version 1.4 */
 let scope = this;
 let callback = ~.Parameters.Input.CallbackScript;
 let dgClassName = "." + ~.Parameters.Input.DataGridClass;
@@ -202,6 +204,7 @@ let options = {
         subtree: true,
     },
     observer = new MutationObserver(setCellContent);
+setCellContent();
 observer.observe(table, options);
 
 function setCellContent() {
@@ -245,7 +248,7 @@ function setCellContent() {
     observer.observe(table, options);
 }
 function getColumnNumber(title) {
-    let arrHeadings = table.querySelectorAll("thead th a");
+    let arrHeadings = table.querySelectorAll("thead th");
     let colNo = 0;
     for (let i = 0; i < arrHeadings.length; i++) {
         if (arrHeadings[i].innerText.toLowerCase() == title.toLowerCase()) {
@@ -319,7 +322,7 @@ For this module to work, the DataGrid must contain an enum column
 3. Drag a *JavaScript* action into the script
 4. Add the Javascript below into the JavaScript code property (ignore the validation error message "Invalid script was detected")
 ```javascript
-/* Stadium Script Version 1.3 */
+/* Stadium Script Version 1.4 */
 let scope = this;
 let callback = ~.Parameters.Input.CallbackScript;
 let dgClassName = "." + ~.Parameters.Input.DataGridClass;
@@ -343,6 +346,7 @@ let options = {
         subtree: true,
     },
     observer = new MutationObserver(setCellContent);
+setCellContent();
 observer.observe(table, options);
 
 function setCellContent() {
@@ -397,7 +401,7 @@ function setCellContent() {
     observer.observe(table, options);
 }
 function getColumnNumber(title) {
-    let arrHeadings = table.querySelectorAll("thead th a");
+    let arrHeadings = table.querySelectorAll("thead th");
     let colNo = 0;
     for (let i = 0; i < arrHeadings.length; i++) {
         if (arrHeadings[i].innerText.toLowerCase() == title.toLowerCase()) {
