@@ -51,7 +51,7 @@ For this module to work, the DataGrid must contain an column showing a boolean v
    2. DataGridClass
    3. CallbackScript
 3. Drag a *JavaScript* action into the script
-4. Add the Javascript below into the JavaScript code property (ignore the validation error message "Invalid script was detected")
+4. Add the Javascript below into the JavaScript code property
 ```javascript
 /* Stadium Script Version 1.4 */
 let scope = this;
@@ -78,6 +78,19 @@ let options = {
     observer = new MutationObserver(setCellContent);
 setCellContent();
 observer.observe(table, options);
+let changeEventCallback = async (e) => {
+    let cellDiv = e.target.closest("td").querySelector("div");
+    observer.disconnect();
+    if (e.target.checked) {
+        cellDiv.textContent = "Yes";
+    } else { 
+        cellDiv.textContent = "No";
+    }
+    observer.observe(table, options);
+    let row = e.target.closest("tr");
+    let data = rowToObj(table, row);
+    await scope[callback](data);
+};
 
 function setCellContent() {
     observer.disconnect();
@@ -97,18 +110,7 @@ function setCellContent() {
             input = document.createElement("input");
             input.setAttribute("type", "checkbox");
             cells[i].appendChild(input);
-            input.addEventListener("change", async e => {
-                observer.disconnect();
-                if (e.target.checked) {
-                    celldiv.textContent = "Yes";
-                } else { 
-                    celldiv.textContent = "No";
-                }
-                observer.observe(table, options);
-                let row = e.target.closest("tr");
-                let data = rowToObj(table, row);
-                await scope[callback](data);
-            });
+            input.addEventListener("change", changeEventCallback);
         }
         if (cells[i].textContent == "Yes") {
             input.setAttribute("checked", "");
@@ -178,7 +180,7 @@ For this module to work, the DataGrid must contain an enum column
    3. Values
    4. CallbackScript
 3. Drag a *JavaScript* action into the script
-4. Add the Javascript below into the JavaScript code property (ignore the validation error message "Invalid script was detected")
+4. Add the Javascript below into the JavaScript code property
 ```javascript
 /* Stadium Script Version 1.4 */
 let scope = this;
@@ -206,6 +208,15 @@ let options = {
     observer = new MutationObserver(setCellContent);
 setCellContent();
 observer.observe(table, options);
+let changeEventCallback = async (e) => {
+    let cellDiv = e.target.closest("td").querySelector("div");
+    observer.disconnect();
+    cellDiv.innerText = e.target.value;
+    observer.observe(table, options);
+    let row = e.target.closest("tr");
+    let data = rowToObj(table, row);
+    await scope[callback](data);
+};
 
 function setCellContent() {
     observer.disconnect();
@@ -233,14 +244,7 @@ function setCellContent() {
                 option.value = vals[j].value;
                 select.add(option);
             }
-            select.addEventListener("change", async e => {
-                observer.disconnect();
-                celldiv.innerText = e.target.value;
-                observer.observe(table, options);
-                let row = e.target.closest("tr");
-                let data = rowToObj(table, row);
-                await scope[callback](data);
-            });
+            select.addEventListener("change", changeEventCallback);
         }
         select.value = cellText;
         celldiv.classList.add("visually-hidden");
@@ -320,7 +324,7 @@ For this module to work, the DataGrid must contain an enum column
    3. Values
    4. CallbackScript
 3. Drag a *JavaScript* action into the script
-4. Add the Javascript below into the JavaScript code property (ignore the validation error message "Invalid script was detected")
+4. Add the Javascript below into the JavaScript code property
 ```javascript
 /* Stadium Script Version 1.4 */
 let scope = this;
@@ -348,6 +352,15 @@ let options = {
     observer = new MutationObserver(setCellContent);
 setCellContent();
 observer.observe(table, options);
+let changeEventCallback = async (e) => {
+    let cellDiv = e.target.closest("td").querySelector("div");
+    observer.disconnect();
+    cellDiv.innerText = e.target.value;
+    observer.observe(table, options);
+    let row = e.target.closest("tr");
+    let data = rowToObj(table, row);
+    await scope[callback](data);
+};
 
 function setCellContent() {
     observer.disconnect();
@@ -380,14 +393,7 @@ function setCellContent() {
             if (vals[j].value == cellText) {
                 radio.checked = "true";
             }
-            radio.addEventListener("change", async e => {
-                observer.disconnect();
-                celldiv.textContent = e.target.value;
-                observer.observe(table, options);
-                let row = e.target.closest("tr");
-                let data = rowToObj(table, row);
-                await scope[callback](data);
-            });
+            radio.addEventListener("change", changeEventCallback);
             let label = document.createElement("label");
             label.setAttribute("for", id);
             label.innerText = vals[j].text;
