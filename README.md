@@ -18,6 +18,7 @@ This repo contains one Stadium 6.7 application
   - [Checkbox Page-Script Setup](#checkbox-page-script-setup)
   - [Checkbox Page Setup](#checkbox-page-setup)
   - [Checkbox Page.Load Event Setup](#checkbox-pageload-event-setup)
+  - [Checkbox Switch Display](#checkbox-switch-display)
 - [DropDown Column Editing](#dropdown-column-editing)
   - [DropDown Column Global Script Setup](#dropdown-column-global-script-setup)
   - [Type Setup](#type-setup)
@@ -109,8 +110,15 @@ function setCellContent() {
         if (!input) {
             input = document.createElement("input");
             input.setAttribute("type", "checkbox");
+            input.id = Math.floor(Math.random() * 10000);
             cells[i].appendChild(input);
             input.addEventListener("change", changeEventCallback);
+        }
+        let label = cells[i].querySelector("label");
+        if (dg.classList.contains("stadium-switch") && !label) {
+            label = document.createElement("label");
+            label.setAttribute("for", input.id);
+            cells[i].appendChild(label);
         }
         if (cells[i].textContent == "Yes") {
             input.setAttribute("checked", "");
@@ -168,6 +176,9 @@ function rowToObj(table, row) {
 3. Populate the DataGrid with data ([see above](#database-connector-and-datagrid))
 
 ![](images/CheckboxScriptInputs.png)
+
+## Checkbox Switch Display
+Optionally, you can display checkboxes as switches by implementing the [Switch](https://github.com/stadium-software/switch) module on the DataGrid. 
 
 # DropDown Column Editing
 For this module to work, the DataGrid must contain an enum column
