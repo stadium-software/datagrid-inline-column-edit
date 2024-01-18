@@ -38,9 +38,14 @@ This repo contains one Stadium 6.7 application
 
 # Version 
 1.1 Added logic to detect DataGrid class uniqueness
+
 1.2 Amended scripts to work with changed DG HTML rendering
+
 1.3 Added custom event handler feature
+
 1.4 Fixed selectable column bug
+
+1.5 Fixed JS bug
 
 # CheckBox Column Editing
 For this module to work, the DataGrid must contain an column showing a boolean value
@@ -54,7 +59,7 @@ For this module to work, the DataGrid must contain an column showing a boolean v
 3. Drag a *JavaScript* action into the script
 4. Add the Javascript below into the JavaScript code property
 ```javascript
-/* Stadium Script Version 1.4 */
+/* Stadium Script Version 1.5 */
 let scope = this;
 let callback = ~.Parameters.Input.CallbackScript;
 let dgClassName = "." + ~.Parameters.Input.DataGridClass;
@@ -71,14 +76,6 @@ dg.classList.add("datagrid-inline-column-editing");
 let table = dg.querySelector("table");
 let colHeading = ~.Parameters.Input.ColumnHeading;
 let column = getColumnNumber(colHeading);
-let options = {
-        characterData: true,
-        childList: true,
-        subtree: true,
-    },
-    observer = new MutationObserver(setCellContent);
-setCellContent();
-observer.observe(table, options);
 let changeEventCallback = async (e) => {
     let cellDiv = e.target.closest("td").querySelector("div");
     observer.disconnect();
@@ -92,7 +89,14 @@ let changeEventCallback = async (e) => {
     let data = rowToObj(table, row);
     await scope[callback](data);
 };
-
+let options = {
+        characterData: true,
+        childList: true,
+        subtree: true,
+    },
+    observer = new MutationObserver(setCellContent);
+setCellContent();
+observer.observe(table, options);
 function setCellContent() {
     observer.disconnect();
     let cells = table.querySelectorAll("tr td:nth-child(" + column + ")");
