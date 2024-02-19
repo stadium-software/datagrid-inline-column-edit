@@ -59,7 +59,7 @@ For this module to work, the DataGrid must contain an column showing a boolean v
 3. Drag a *JavaScript* action into the script
 4. Add the Javascript below into the JavaScript code property
 ```javascript
-/* Stadium Script Version 1.5 */
+/* Stadium Script Version 1.5 https://github.com/stadium-software/datagrid-inline-column-edit */
 let scope = this;
 let callback = ~.Parameters.Input.CallbackScript;
 let dgClassName = "." + ~.Parameters.Input.DataGridClass;
@@ -197,7 +197,7 @@ For this module to work, the DataGrid must contain an enum column
 3. Drag a *JavaScript* action into the script
 4. Add the Javascript below into the JavaScript code property
 ```javascript
-/* Stadium Script Version 1.4 */
+/* Stadium Script Version 1.4 https://github.com/stadium-software/datagrid-inline-column-edit */
 let scope = this;
 let callback = ~.Parameters.Input.CallbackScript;
 let dgClassName = "." + ~.Parameters.Input.DataGridClass;
@@ -341,7 +341,7 @@ For this module to work, the DataGrid must contain an enum column
 3. Drag a *JavaScript* action into the script
 4. Add the Javascript below into the JavaScript code property
 ```javascript
-/* Stadium Script Version 1.4 */
+/* Stadium Script Version 1.4 https://github.com/stadium-software/datagrid-inline-column-edit */
 let scope = this;
 let callback = ~.Parameters.Input.CallbackScript;
 let dgClassName = "." + ~.Parameters.Input.DataGridClass;
