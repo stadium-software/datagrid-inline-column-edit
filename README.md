@@ -1,6 +1,6 @@
 # DataGrid Inline Column Editing
 
-This module shows how to enable editing of data contained in a specific DataGrid column. Data updates need to be processed immediately in the change event script handler. 
+This module shows how to enable the immediate editing of data contained in a specific DataGrid column
 
 https://github.com/stadium-software/datagrid-inline-column-edit/assets/2085324/2abeaf5e-b020-4b35-86df-cc011f0a870e
 
@@ -332,7 +332,7 @@ function rowToObj(table, row) {
 
 **NOTE: To ensure the correct functioning of the DataGrid search and sort functionality, be sure to refresh the DataGrid data after saving updates**
 
-![](images/CheckboxScriptInputs.png)
+![](images/ScriptInputs.png)
 
 ## Checkbox Switch Display
 To display checkboxes as switches, the [Switch](https://github.com/stadium-software/switch) CSS files must be included in the EmbeddedFiles and referenced in the "Head" property as described in the [Switch](https://github.com/stadium-software/switch) module
