@@ -2,7 +2,7 @@
 
 This module shows how to enable editing of data contained in a specific DataGrid column. Data updates need to be processed immediately in the change event script handler. 
 
-https://github.com/stadium-software/datagrid-column-edit-inline/assets/2085324/822e6933-472b-487d-801a-24a798be62dd
+https://github.com/stadium-software/datagrid-inline-column-edit/assets/2085324/2abeaf5e-b020-4b35-86df-cc011f0a870e
 
 # Contents
 - [DataGrid Inline Column Editing](#datagrid-inline-column-editing)
