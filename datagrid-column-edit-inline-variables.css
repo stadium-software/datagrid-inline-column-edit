@@ -1,4 +1,7 @@
 :root {
+    --datagrid-column-edit-radio-label-size: 13px;
+    --datagrid-column-edit-radio-label-color: #6f6f6f;
+
     --datagrid-column-edit-radio-button-label-font-size: 14px;
     --datagrid-column-edit-radio-button-size: 16px; 
 

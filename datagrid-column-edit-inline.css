@@ -26,7 +26,12 @@
 		padding: 6px 0 0 0;
 		background-color: transparent;
 	}
-	& .inline-radio-button-list-container label {
-		font-size: var(--datagrid-column-edit-radio-button-label-font-size);
+	.inline-column-cell {
+		font-size: 0;
+		color: transparent;
+	}
+	.inline-radio-label {
+		color: var(--datagrid-column-edit-radio-label-color);
+		font-size: var(--datagrid-column-edit-radio-label-size);
 	}
 }
