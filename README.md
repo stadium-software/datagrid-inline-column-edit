@@ -10,8 +10,6 @@ https://github.com/stadium-software/datagrid-inline-column-edit/assets/2085324/2
 - [Version](#version)
 - [Setup](#setup)
   - [Types Setup](#types-setup)
-    - [Option](#option)
-    - [Column](#column)
   - [Global Script Setup](#global-script-setup)
   - [Page-Script Setup](#page-script-setup)
   - [Page Setup](#page-setup)
@@ -22,26 +20,22 @@ https://github.com/stadium-software/datagrid-inline-column-edit/assets/2085324/2
   - [CSS Upgrading](#css-upgrading)
 
 # Version 
+Current version 2.1
+
 2.0 Consolidated disparate column scripts into one
+
+2.1 Fixed "control in template" bug; consolidated column types into one
 
 # Setup
 
 ## Types Setup
-Create two types
-
-### Option
-Add a type called "Option" with the following properties
-1. text (Any)
-2. value (Any)
-
-![](images/OptionType.png)
-
-### Column
 Add a type called "Column" with the following properties
 1. column (Any)
 2. type (Any)
 3. options (List)
-   1. Item (Types.Option)
+   1. Item (Object)
+      1. "text" (Any)
+      2. "value" (Any)
 
 ![](images/ColumnType.png)
 
@@ -51,114 +45,102 @@ Add a type called "Column" with the following properties
    1. CallbackScript
    2. Columns
    3. DataGridClass
+   4. IDColumn
 3. Drag a *JavaScript* action into the script
 4. Add the Javascript below into the JavaScript code property
 ```javascript
-/* Stadium Script Version 2.0 https://github.com/stadium-software/datagrid-inline-column-edit */
+/* Stadium Script Version 2.1 https://github.com/stadium-software/datagrid-inline-column-edit */
 let scope = this;
 let callback = ~.Parameters.Input.CallbackScript;
-let dgClassName = "." + ~.Parameters.Input.DataGridClass;
+let classInput = ~.Parameters.Input.DataGridClass;
+if (typeof classInput == "undefined") {
+    console.error("The DataGridClass parameter is required");
+    return false;
+} 
+let dgClassName = "." + classInput;
 let dg = document.querySelectorAll(dgClassName);
 if (dg.length == 0) {
-    dg = document.querySelector(".data-grid-container");
+    console.error("The class '" + dgClassName + "' is not assigned to any DataGrid");
+    return false;
 } else if (dg.length > 1) {
     console.error("The class '" + dgClassName + "' is assigned to multiple DataGrids. DataGrids using this script must have unique classnames");
     return false;
 } else { 
     dg = dg[0];
 }
-if (dg.querySelector(".data-grid-search-box")) {
-    console.warn("Datagrid search is not supported with the inline-column-edit module. The search box has been hidden");
-    dg.querySelector(".data-grid-header > .form-group.input-group").style.display = "none";
-    dg.querySelector(".data-grid-header > .data-grid-search-help-button").style.display = "none";
-}
 dg.classList.add("datagrid-inline-column-editing");
+let datagridname = dg.id.split("_")[1].replace("-container","");
 let table = dg.querySelector("table");
+let dataGridColumns = getColumnDefinition();
 let columns = ~.Parameters.Input.Columns;
+let IDCol = ~.Parameters.Input.IDColumn;
+if (!isNumber(IDCol)) {
+    IDCol = getElementIndex(dataGridColumns, IDCol) + 1;
+}
+let IDColName = dataGridColumns[IDCol - 1];
 let options = {
     childList: true,
     subtree: true,
+    characterData: true,
 };
 let observer = new MutationObserver(setupColumns);
-let options2 = {
-    characterData: true,
-    subtree: true,
-};
-let observer2 = new MutationObserver(setValues);
 let isCheckbox = ["checkbox","checkboxes"];
 let isDropDown = ["dropdown","dropdowns"];
 let isRadioButton = ["radiobutton","radiobuttons","radio","radios"];
 let isSwitch = ["switch","switches"];
-    
+
 setupColumns();
 
 /*Main*/
 let changeEventCallback = async (e) => {
-    let el = e.target;
-    let parent = el.closest("td");
-    let els = parent.querySelectorAll(".inline-container");
-    let text;
-    if (e.target.tagName.toLowerCase() == "select") {
-        text = el.options[e.target.selectedIndex].text;
-        parent.setAttribute("cell-value", el.value);
-    } else if (e.target.tagName.toLowerCase() == "input" && el.type == "radio") {
-        text = el.closest("div").querySelector("label").innerText;
-        parent.setAttribute("cell-value", el.value);
-    } else if (e.target.tagName.toLowerCase() == "input" && el.type == "checkbox") {
-        text = "Yes";
-        if (parent.innerText == "Yes") {
-            text = "No";
-        }
-    }
-    parent.innerText = text;
-    for (let i = 0; i < els.length; i++) {
-        parent.appendChild(els[i]);
-    }
     let row = e.target.closest("tr");
-    let data = rowToObj(table, row);
-    await scope[callback](data);
+    let rowID = row.getAttribute("data-id");
+    let returnData = rowToObjs(row, rowID);
+    await scope[callback](returnData);
 };
 
 function setupColumns(){
-    if (table.querySelectorAll("tbody tr").length < 2) {
-        observer.observe(table, options);
-        return false;
-    }
     observer.disconnect();
     for (let i = 0; i < columns.length; i++) {
         if (isCheckbox.includes(columns[i].type)) {
-            setupCheckboxes(columns[i].column);
+            setupCheckboxes(getColNo(columns[i].column));
         } else if (isDropDown.includes(columns[i].type)) {
-            setupDropdowns(columns[i].column, columns[i].options);
+            setupDropdowns(getColNo(columns[i].column), columns[i].options);
         } else if (isRadioButton.includes(columns[i].type)) {
-            setupRadioButtons(columns[i].column, columns[i].options);
+            setupRadioButtons(getColNo(columns[i].column), columns[i].options);
         } else if (isSwitch.includes(columns[i].type)) {
-            setupCheckboxes(columns[i].column);
-            setupSwitches(columns[i].column);
+            setupCheckboxes(getColNo(columns[i].column));
+            setupSwitches(getColNo(columns[i].column));
         }
     }
-    setValues();
-}
-function setValues(){
-    observer2.disconnect();
+
+    let rows = table.querySelectorAll("tbody tr");
+    for (let i = 0; i < rows.length; i++) {
+        if (rows[i].cells[IDCol - 1]) {
+            let id = rows[i].cells[IDCol - 1].textContent;
+            rows[i].setAttribute("data-id", convertToNumber(id));
+        }
+    }
+
     for (let i = 0; i < columns.length; i++) {
         if (isCheckbox.includes(columns[i].type)) {
-            setCheckboxValues(columns[i].column);
+            setCheckboxValues(getColNo(columns[i].column));
         } else if (isDropDown.includes(columns[i].type)) {
-            setDropdownValues(columns[i].column, columns[i].options);
+            setDropdownValues(getColNo(columns[i].column), columns[i].options);
         } else if (isRadioButton.includes(columns[i].type)) {
-            setRadioButtonValues(columns[i].column, columns[i].options);
+            setRadioButtonValues(getColNo(columns[i].column), columns[i].options);
         } else if (isSwitch.includes(columns[i].type)) {
-            setCheckboxValues(columns[i].column);
+            setCheckboxValues(getColNo(columns[i].column));
         }
     }
-    observer2.observe(table, options2);
+    observer.observe(table, options);
 }
 
 /*Checkbox Columns*/
 function setupCheckboxes(colNo) {
     let cells = table.querySelectorAll("tr td:nth-child(" + colNo + ")");
     for (let i = 0; i < cells.length; i++) {
+        if (cells[i].classList.contains("inline-column-cell")) continue;
         cells[i].classList.add("inline-column-cell");
         let input = document.createElement("input");
         input.classList.add("inline-container");
@@ -171,11 +153,11 @@ function setupCheckboxes(colNo) {
 function setCheckboxValues(colNo) {
     let cells = table.querySelectorAll("tr td:nth-child(" + colNo + ")");
     for (let i = 0; i < cells.length; i++) {
-        let cellText = Array.prototype.reduce.call(cells[i].childNodes, function(a, b) { return a + (b.nodeType === 3 ? b.textContent : ''); }, '');
+        let cellValue = getDataModelValue(cells[i].closest("tr").getAttribute("data-id"), dataGridColumns[colNo - 1]);
         let input = cells[i].querySelector("input");
-        if (cellText == "Yes") {
+        if (cellValue == true) {
             input.setAttribute("checked", "");
-        } else { 
+        } else if (cellValue == false) { 
             input.removeAttribute("checked");
         }
     }
@@ -184,6 +166,7 @@ function setCheckboxValues(colNo) {
 function setupDropdowns(colNo, vals){
     let cells = table.querySelectorAll("tr td:nth-child(" + colNo + ")");
     for (let i = 0; i < cells.length; i++) {
+        if (cells[i].classList.contains("inline-column-cell")) continue;
         cells[i].classList.add("inline-column-cell");
         let select = document.createElement("select");
         select.classList.add("form-control", "datagrid-dropdown", "inline-container");
@@ -200,28 +183,29 @@ function setupDropdowns(colNo, vals){
 function setDropdownValues(colNo, vals){
     let cells = table.querySelectorAll("tr td:nth-child(" + colNo + ")");
     for (let i = 0; i < cells.length; i++) {
-        let cellText = Array.prototype.reduce.call(cells[i].childNodes, function(a, b) { return a + (b.nodeType === 3 ? b.textContent : ''); }, '');
-        let selectedIndex = getIndex(cellText,vals,"text");
+        let cellValue = getDataModelValue(cells[i].closest("tr").getAttribute("data-id"), dataGridColumns[colNo - 1]);
+        let selectedIndex = getIndex(cellValue,vals,"text");
         let select = cells[i].querySelector("select");
-        select.selectedIndex = selectedIndex;
-        cells[i].setAttribute("cell-value", select.options[selectedIndex].value);
+        if (selectedIndex > -1) select.selectedIndex = selectedIndex;
     }
 }
 /*RadioButton Columns*/
 function setupRadioButtons(colNo, vals){
     let cells = table.querySelectorAll("tr td:nth-child(" + colNo + ")");
     for (let i = 0; i < cells.length; i++) {
+        if (cells[i].classList.contains("inline-column-cell")) continue;
         cells[i].classList.add("inline-column-cell");
         let radioContainer = document.createElement("div");
         radioContainer.classList.add("radio-button-list-container", "inline-radio-button-list-container","inline-container");
         for (let j = 0; j < vals.length; j++) { 
+            let rand = Math.floor(Math.random() * 1000 + i + j) + 1;
             let radioWrapper = document.createElement("div");
             radioWrapper.classList.add("radio");
             let radio = document.createElement("input");
             radio.type = "radio";
-            let name = dgClassName + "_" + "radio_inline_" + i;
+            let name = classInput + "_" + "radio_inline_" + i + "_" + colNo;
             radio.name = name;
-            let id = name + "_radio_" + j;
+            let id = name + "_radio_" + j + colNo + rand;
             radio.id = id;
             radio.value = vals[j].value;
             radio.addEventListener("change", changeEventCallback);
@@ -239,17 +223,16 @@ function setupRadioButtons(colNo, vals){
 function setRadioButtonValues(colNo, vals){
     let cells = table.querySelectorAll("tr td:nth-child(" + colNo + ")");
     for (let i = 0; i < cells.length; i++) {
-        let cellText = Array.prototype.reduce.call(cells[i].childNodes, function(a, b) { return a + (b.nodeType === 3 ? b.textContent : ''); }, '');
-        let selectedIndex = getIndex(cellText,vals,"text");
-        let radios = cells[i].querySelectorAll("input[type='radio']");
-        radios[selectedIndex].checked = true;
-        cells[i].setAttribute("cell-value", radios[selectedIndex].value);
+        let cellValue = getDataModelValue(cells[i].closest("tr").getAttribute("data-id"), dataGridColumns[colNo - 1]);
+        let selectedIndex = getIndex(cellValue,vals,"text");
+        if (selectedIndex > -1) cells[i].querySelectorAll("input[type='radio']")[selectedIndex].checked = true;
     }
 }
 /*Switch Columns*/
 function setupSwitches(colNo) {
     let cells = table.querySelectorAll("tr td:nth-child(" + colNo + ")");
     for (let i = 0; i < cells.length; i++) {
+        if (cells[i].classList.contains("stadium-switch")) continue;
         cells[i].classList.add("stadium-switch");
         let input = cells[i].querySelector("input[type='checkbox']");
         let label = document.createElement("label");
@@ -258,25 +241,76 @@ function setupSwitches(colNo) {
         cells[i].appendChild(label);
     }
 }
-/*Utilities*/
+/*DM & Utilities*/
+function getDataModelValue(id, column){
+    let ob = getDataModelObj(id);
+    return ob[column];
+}
+function getDataModelObj(id){
+    let dgData = scope[`${datagridname}Data`];
+    let ob = dgData.filter((el) => {return el[IDColName] == id;});
+    return ob[0];
+}
 function getIndex(needle,haystack,prop){
     return haystack.findIndex(item => item[prop] === needle);
 }
-function rowToObj(table, row) {
-    let propCells = table.rows[0].cells;
-    let propNames = [];
-    let obj, cells;
-    for (let i = 0; i<propCells.length; i++) {
-        propNames.push(propCells[i].textContent || propCells[i].innerText);
+function rowToObjs(row, id) {
+    let data = getDataModelObj(id);
+    let dataClone = JSON.parse(JSON.stringify(data));
+    let objs = Object.entries(data);
+    for (let i=0;i<objs.length;i++) {
+        let key = objs[i][0];
+        let el = row.cells[getColumnIndex(key)];
+        let select = el.querySelector("select");
+        let radio = el.querySelector("input[type='radio']");
+        let checkbox = el.querySelector("input[type='checkbox']");
+        if (select) {
+            dataClone[key] = select.value;
+            data[key] = select.options[select.selectedIndex].text;
+        } else if (radio) {
+            dataClone[key] = el.querySelector("input[type='radio']:checked").value;
+            data[key] = el.querySelector("input[type='radio']:checked").closest(".radio").querySelector("label").innerText;
+        } else if (checkbox) {
+            dataClone[key] = checkbox.checked;
+            data[key] = checkbox.checked;
+        }
     }
-    cells = row.cells;
-    obj = {};
-    for (let k = 0; k < cells.length; k++) {
-        let val = cells[k].getAttribute("cell-value");
-        if (!val) val = Array.prototype.reduce.call(cells[k].childNodes, function(a, b) { return a + (b.nodeType === 3 ? b.textContent : ''); }, '');
-        obj[propNames[k]] = val;
+    return dataClone;
+}
+function getElementIndex(haystack, needle) {
+    return haystack.indexOf(needle);
+}
+function getColumnDefinition(){
+    let cols = [];
+    let colDefs = scope[`${datagridname}ColumnDefinitions`];
+    if (table.querySelector("thead th:nth-child(1) input[type=checkbox")) cols.push("RowSelector");
+    for (let i = 0; i < colDefs.length; i++) {
+        cols.push(colDefs[i].name);
     }
-    return obj;
+    return cols;
+}
+function getColumnIndex(column){
+    let colNames = getColumnDefinition();
+    let indx = colNames.findIndex(el => el == column);
+    return indx;
+}
+function isNumber(str) {
+    if (typeof str == "number") return true;
+    return !isNaN(str) && !isNaN(parseFloat(str));
+}
+function convertToNumber(val) {
+    if (!isNumber(val)) {
+        let no;
+        if (typeof val == "string") no = val.replace(/ /g,"");
+        if (isNumber(no)) return no;
+    }
+    return val;
+}
+function getColNo(col){
+    if (!isNumber(col)) {
+        col = getElementIndex(dataGridColumns, col) + 1;
+    }
+    return col;
 }
 ```
 
@@ -328,9 +362,8 @@ function rowToObj(table, row) {
    1. CallbackScript: The name of the page-level script that will process the updated data (e.g. "ChangeEventHandler")
    2. Columns: Select the List called "ColumnsList" from the dropdown
    3. DataGridClass: The class you assigned to the DataGrid (e.g datagrid-column-edit-inline)
+   4. IDColumn: The column name or number of the column containing the row identifyer
 6. Populate the DataGrid with data ([see above](#database-connector-and-datagrid))
-
-**NOTE: To ensure the correct functioning of the DataGrid search and sort functionality, be sure to refresh the DataGrid data after saving updates**
 
 ![](images/ScriptInputs.png)
 
