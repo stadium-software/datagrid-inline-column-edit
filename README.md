@@ -24,7 +24,7 @@ Current version 2.1
 
 2.0 Consolidated disparate column scripts into one
 
-2.1 Fixed "control in template" bug; consolidated column types into one
+2.1 Fixed "control in template" bug; extended "Column" type to include options object
 
 # Setup
 
