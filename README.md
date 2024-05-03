@@ -342,19 +342,25 @@ function getColNo(col){
    3.  data: A list of text-value pairs for dropdowns amnd radio button lists (see example below)
 ```json
 = [{
-	"column": 4,
+	"column": 8,
 	"type": "switch"
 },{
-	"column": 5,
+	"column": "Happy",
 	"type": "checkbox"
 },{
-	"column": 6,
+	"column": "Subscription",
 	"type": "radio",
-	"options": [{"text":"Subscribed","value":1},{"text":"Unsubscribed","value":2},{"text":"No data","value":3}]
+	"options": [{"text":"Subscribed","value":1},{"text":"Unsubscribed","value":2},{
+		"text": "No data",
+		"value": 3
+	}]
 },{
-	"column": 7,
+	"column": "NoOfChildren",
 	"type": "dropdown",
-	"options": [{"text":"Subscribed","value":1},{"text":"Unsubscribed","value":2},{"text":"No data","value":3}]
+	"options": [{"text":"","value":""},{"text":1,"value":1},{"text":2,"value":2},{"text":3, "value":3},{
+		"text": 4,
+		"value": 4
+	}]
 }]
 ```
 4. Drag the Global Script called "ColumnEditing" into the Page.Load script
