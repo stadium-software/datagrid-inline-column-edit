@@ -339,7 +339,7 @@ function getColNo(col){
       2. switch (apply to boolean columns only)
       3. radio (apply to enum columns only)
       4. dropdown (apply to enum columns only)
-   3.  data: A list of text-value pairs for dropdowns amnd radio button lists (see example below)
+   3.  data: A list of text-value pairs for dropdowns and radio button lists (see example below)
 ```json
 = [{
 	"column": 8,
