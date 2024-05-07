@@ -34,8 +34,8 @@ Add a type called "Column" with the following properties
 2. type (Any)
 3. options (List)
    1. Item (Object)
-      1. "text" (Any)
-      2. "value" (Any)
+      1. text (Any)
+      2. value (Any)
 
 ![](images/ColumnType.png)
 
