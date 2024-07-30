@@ -9,6 +9,7 @@ https://github.com/stadium-software/datagrid-inline-column-edit/assets/2085324/2
 - [Contents](#contents)
 - [Version](#version)
 - [Setup](#setup)
+  - [Application Setup](#application-setup)
   - [Types Setup](#types-setup)
   - [Global Script Setup](#global-script-setup)
   - [Page-Script Setup](#page-script-setup)
@@ -28,6 +29,9 @@ Current version 2.1
 2.1 Fixed "control in template" bug; extended "Column" type to include options object
 
 # Setup
+
+## Application Setup
+1. Check the *Enable Style Sheet* checkbox in the application properties
 
 ## Types Setup
 Add a type called "Column" with the following properties
