@@ -1,12 +1,10 @@
-# DataGrid Inline Column Editing
+# DataGrid Inline Column Editing <!-- omit in toc -->
 
 This module shows how to enable the immediate editing of data contained in a specific DataGrid column
 
 https://github.com/stadium-software/datagrid-inline-column-edit/assets/2085324/2abeaf5e-b020-4b35-86df-cc011f0a870e
 
-# Contents
-- [DataGrid Inline Column Editing](#datagrid-inline-column-editing)
-- [Contents](#contents)
+# Contents <!-- omit in toc -->
 - [Version](#version)
 - [Setup](#setup)
   - [Application Setup](#application-setup)
