@@ -92,9 +92,6 @@ let isDropDown = ["dropdown","dropdowns"];
 let isRadioButton = ["radiobutton","radiobuttons","radio","radios"];
 let isSwitch = ["switch","switches"];
 
-setupColumns();
-
-/*Main*/
 let changeEventCallback = async (e) => {
     let row = e.target.closest("tr");
     let rowID = row.getAttribute("data-id");
@@ -102,6 +99,9 @@ let changeEventCallback = async (e) => {
     await scope[callback](returnData);
 };
 
+setupColumns();
+
+/*Main*/
 function setupColumns(){
     observer.disconnect();
     for (let i = 0; i < columns.length; i++) {
