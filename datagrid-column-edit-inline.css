@@ -10,17 +10,17 @@
 	}
 	& .datagrid-dropdown {
 		width: auto;
-		font-size: var(--datagrid-column-edit-dropdown-font-size);
-		padding-top: var(--datagrid-column-edit-dropdown-padding-topbottom);
-		padding-bottom: var(--datagrid-column-edit-dropdown-padding-topbottom);
-		padding-left: var(--datagrid-column-edit-dropdown-padding-left);
+		font-size: var(--datagrid-column-edit-dropdown-font-size, var(--FORM-CONTROL-FONT-SIZE));
+		padding-top: var(--datagrid-column-edit-dropdown-padding-topbottom, 0);
+		padding-bottom: var(--datagrid-column-edit-dropdown-padding-topbottom, 0);
+		padding-left: var(--datagrid-column-edit-dropdown-padding-left, 6px);
 	}
 	& .inline-radio-button-list-container .radio {
 		display: flex;
 		padding: 0 8px;
 	}
 	& .inline-radio-button-list-container input[type=radio] ~ label {
-		background-size: var(--datagrid-column-edit-radio-button-size);
+		background-size: var(--datagrid-column-edit-radio-button-size, 16px);
 	}
 	& .inline-radio-button-list-container {
 		padding: 6px 0 0 0;
@@ -31,7 +31,7 @@
 		color: transparent;
 	}
 	.inline-radio-label {
-		color: var(--datagrid-column-edit-radio-label-color);
-		font-size: var(--datagrid-column-edit-radio-label-size);
+		color: var(--datagrid-column-edit-radio-label-color, var(--FORM-CONTROL-FONT-COLOR));
+		font-size: var(--datagrid-column-edit-radio-label-size, var(--FORM-CONTROL-FONT-SIZE));
 	}
 }
