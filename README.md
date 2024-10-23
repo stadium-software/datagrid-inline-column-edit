@@ -1,6 +1,10 @@
 # DataGrid Inline Column Editing <!-- omit in toc -->
 
-This module shows how to enable the immediate editing of data contained in a specific DataGrid column
+This module shows how to enable the immediate editing of data contained in a specific DataGrid column.
+
+**NOTE**
+
+Consider using the [Client-Side DataGrid](https://github.com/stadium-software/repeater-datagrid) instead of this module. 
 
 https://github.com/stadium-software/datagrid-inline-column-edit/assets/2085324/2abeaf5e-b020-4b35-86df-cc011f0a870e
 
