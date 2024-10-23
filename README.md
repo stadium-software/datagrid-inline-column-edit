@@ -4,7 +4,7 @@ This module shows how to enable the immediate editing of data contained in a spe
 
 **NOTE**
 
-Consider using the [Client-Side DataGrid](https://github.com/stadium-software/repeater-datagrid) instead of this module. 
+Consider using the [Repeater Client-Side DataGrid](https://github.com/stadium-software/repeater-datagrid) instead of this module. *Repeater* controls are more extensible and easier to customise that DataGrids. 
 
 https://github.com/stadium-software/datagrid-inline-column-edit/assets/2085324/2abeaf5e-b020-4b35-86df-cc011f0a870e
 
