@@ -24,11 +24,13 @@ https://github.com/stadium-software/datagrid-inline-column-edit/assets/2085324/2
   - [Known Issues](#known-issues)
 
 # Version 
-Current version 2.1
+Current version 2.2
 
 2.0 Consolidated disparate column scripts into one
 
-2.1 Fixed "control in template" bug; extended "Column" type to include options object
+2.1 Fixed "control in template" bug; extended "Column" type to include options object2.2
+
+2.2 Fixed "no DataGrid column for dataset property" bug; added bulk processing checkbox column to sample
 
 # Setup
 
@@ -54,9 +56,9 @@ Add a type called "Column" with the following properties
    3. DataGridClass
    4. IDColumn
 3. Drag a *JavaScript* action into the script
-4. Add the Javascript below into the JavaScript code property
+4. Add the Javascript below unchanged into the JavaScript code property
 ```javascript
-/* Stadium Script Version 2.1 https://github.com/stadium-software/datagrid-inline-column-edit */
+/* Stadium Script Version 2.2 https://github.com/stadium-software/datagrid-inline-column-edit */
 let scope = this;
 let callback = ~.Parameters.Input.CallbackScript;
 let classInput = ~.Parameters.Input.DataGridClass;
@@ -268,18 +270,20 @@ function rowToObjs(row, id) {
     for (let i=0;i<objs.length;i++) {
         let key = objs[i][0];
         let el = row.cells[getColumnIndex(key)];
-        let select = el.querySelector("select");
-        let radio = el.querySelector("input[type='radio']");
-        let checkbox = el.querySelector("input[type='checkbox']");
-        if (select) {
-            dataClone[key] = select.value;
-            data[key] = select.options[select.selectedIndex].text;
-        } else if (radio) {
-            dataClone[key] = el.querySelector("input[type='radio']:checked").value;
-            data[key] = el.querySelector("input[type='radio']:checked").closest(".radio").querySelector("label").innerText;
-        } else if (checkbox) {
-            dataClone[key] = checkbox.checked;
-            data[key] = checkbox.checked;
+        if (el) {
+            let select = el.querySelector("select");
+            let radio = el.querySelector("input[type='radio']");
+            let checkbox = el.querySelector("input[type='checkbox']");
+            if (select) {
+                dataClone[key] = select.value;
+                data[key] = select.options[select.selectedIndex].text;
+            } else if (radio) {
+                dataClone[key] = el.querySelector("input[type='radio']:checked").value;
+                data[key] = el.querySelector("input[type='radio']:checked").closest(".radio").querySelector("label").innerText;
+            } else if (checkbox) {
+                dataClone[key] = checkbox.checked;
+                data[key] = checkbox.checked;
+            }
         }
     }
     return dataClone;
@@ -404,6 +408,7 @@ The CSS below is required for the correct functioning of the module. Some elemen
 1. Open the CSS file called [*datagrid-column-edit-inline-variables.css*](datagrid-column-edit-inline-variables.css) from this repo
 2. Adjust the variables in the *:root* element as you see fit
 3. Overwrite the file in the CSS folder of your application with the customised file
+4. Do not change any CSS other than the variables provided in the *-variables.css file
 
 ## CSS Upgrading
 To upgrade the CSS in this module, follow the [steps outlined in this repo](https://github.com/stadium-software/samples-upgrading)
